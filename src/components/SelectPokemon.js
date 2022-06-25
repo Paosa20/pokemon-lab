@@ -1,62 +1,78 @@
-import { useEffect, useState } from "react"
-import Select from 'react-select'
+import { useEffect, useState } from "react";
+import Select from "react-select";
 
 const SelectPokemon = () => {
+  const url = "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0";
+  const [pokemones, setPokemones] = useState([]);
+  const [urlPokemon, setUrlPokemon] = useState();
+  const [imgPokemon, setImgPokemon] = useState(); 
 
-    const url = "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0"
-    const [pokemones, setPokemones] = useState([])
+  async function fetchPokemonList() {
+    try {
+      const respuesta = await fetch(url, {
+        method: "GET",
+      });
 
-    async function fetchPokemon() {
+      const pokemonesArr = await respuesta.json();
+      setPokemones(pokemonesArr.results);
 
-        try {
-
-            const respuesta = await fetch(url, {
-                method: "GET"
-            })
-
-            const pokemonesArr = await respuesta.json()
-            setPokemones(pokemonesArr.results)
-
-            //console.log(pokemonesArr.results);
-
-        } catch (error) {
-            console.log("ERROR: ", error);
-        }
+      //console.log(pokemonesArr.results);
+    } catch (error) {
+      console.log("ERROR: ", error);
     }
+  }
 
-    let options = [];
-    pokemones.map(function (pokemon) {
+  let options = [];
+  pokemones.map(function (pokemon) {
+    try {
+      //console.log(pokemon);
+      options.push({ value: pokemon.url, label: pokemon.name });
+    } catch (error) {
+      console.log("ERROR: ", error);
+    }
+    return null;
+  });
 
-       
+  async function fetchPokemon() {
+    try {
+      console.log(urlPokemon);
+      const respuestaPok = await fetch(urlPokemon, {
+        method: "GET",
+      });
 
-        try {
-            console.log(pokemon);
-            options.push({ value: pokemon.url, label: pokemon.name })
-           
-            
-        } catch (error) {
-            console.log("ERROR: ", error);
-        }
-        return null
-       
-    })
+      const pokemon = await respuestaPok.json();
 
-    //console.log(options);
+      console.log(pokemon.sprites.back_default);
 
-    useEffect(() => {
-        fetchPokemon()
-    }, [])
+      console.log(pokemon);
+    } catch (error) {
+      console.log("ERROR: ", error);
+    }
+  }
 
+  const handleChange = (event) => {
+    const url = event.value;
 
+    setUrlPokemon(url);
 
-    return (
-        <div>
-            <Select options={options}></Select>
+    fetchPokemon();
 
-            <div> </div>
-        </div>
-    )
+    //get the selected pokemon
+  };
 
-}
+  useEffect(() => {
+    fetchPokemonList();
+  }, []);
 
-export default SelectPokemon
+  return (
+    <div>
+      <Select options={options} onChange={handleChange}></Select>
+
+      <div>
+          <img src={imgPokemon} width="200px" height={"300px"}/>
+          </div>
+    </div>
+  );
+};
+
+export default SelectPokemon;
