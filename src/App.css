@@ -17,3 +17,10 @@
 .pokemon-image{
   margin-top: 10%;
 }
+
+.boton-ataque {
+  padding: 1rem 2rem;
+  border-radius: 32px;
+  font-size: 16px;
+  margin-top: 2%;
+}

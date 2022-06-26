@@ -8,6 +8,7 @@ const SelectPokemon = (props) => {
   const [name, setName] = useState();
   const [health, setHealth] = useState(0);
   const [maxHealth, setMaxHealth] = useState(0);
+  const [ataques, setAtaques] = useState();
   async function fetchPokemonList() {
     try {
       const respuesta = await fetch(url, {
@@ -43,9 +44,10 @@ const SelectPokemon = (props) => {
       setHealth(pokemon.stats[0].base_stat);
       setMaxHealth(pokemon.stats[0].base_stat);
 
-     // console.log(pokemon.stats[0].base_stat);
+      // console.log(pokemon.stats[0].base_stat);
 
       setName(pokemon.species.name);
+      await fetchAtaques(pokemon);
       if (props.player === "1") {
         setImgPokemon(pokemon.sprites.back_default);
       } else {
@@ -56,11 +58,45 @@ const SelectPokemon = (props) => {
     }
   }
 
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const url = event.value;
 
     fetchPokemon(url);
   };
+
+  async function fetchAtaques(pokemon) {
+    try {
+      const movesPokemon = [];
+      for (let i = 0; i < 4; i++) {
+        const indice = Math.floor(Math.random() * pokemon.moves.length);
+        movesPokemon.push(pokemon.moves[indice]);
+      }
+
+      const promesas = movesPokemon.map((ataque) => {
+        return fetch(ataque.move.url);
+      });
+
+      const respuestas = await Promise.all(promesas);
+
+      const ataques = await Promise.all(
+        respuestas.map(function (respuesta) {
+          return respuesta.json();
+        })
+      );
+
+      setAtaques(ataques);
+
+      let receptorDano;
+
+      if (props.player === "1") {
+        receptorDano = "pokemon1";
+      } else {
+        receptorDano = "pokemon2";
+      }
+    } catch (error) {
+      console.log("ERROR: ", error);
+    }
+  }
 
   useEffect(() => {
     fetchPokemonList();
@@ -79,16 +115,29 @@ const SelectPokemon = (props) => {
           height={"300px"}
         />
         <progress id="vida-pokemon1" value={health} max={maxHealth}></progress>
-        <label htmlFor="vida-pokemon1" id="label-hp1">{health+ "/" +maxHealth}</label>
+        <label htmlFor="vida-pokemon1" id="label-hp1">
+          {health + "/" + maxHealth}
+        </label>
       </div>
 
-      <div> 
+      <div>
 
+
+          {ataques !== undefined && 
+           ataques.map(function (a) {
+            return (
+              <div key={a.name}>
+                  
+                <button key={a.name} className="boton-ataque"> {a.name}</button>
+              </div>
+            );
+          })}
+       
       </div>
     </div>
   );
 };
 
-//map the attacks and create the buttons with thr attack names and values  
+//map the attacks and create the buttons with thr attack names and values
 
 export default SelectPokemon;
