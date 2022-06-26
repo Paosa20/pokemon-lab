@@ -6,7 +6,8 @@ const SelectPokemon = (props) => {
   const [pokemones, setPokemones] = useState([]);
   const [imgPokemon, setImgPokemon] = useState();
   const [name, setName] = useState();
-  const [health, setHealth] = useState();
+  const [health, setHealth] = useState(0);
+  const [maxHealth, setMaxHealth] = useState(0);
   async function fetchPokemonList() {
     try {
       const respuesta = await fetch(url, {
@@ -40,6 +41,9 @@ const SelectPokemon = (props) => {
       console.log(pokemon);
 
       setHealth(pokemon.stats[0].base_stat);
+      setMaxHealth(pokemon.stats[0].base_stat);
+
+     // console.log(pokemon.stats[0].base_stat);
 
       setName(pokemon.species.name);
       if (props.player === "1") {
@@ -74,11 +78,17 @@ const SelectPokemon = (props) => {
           width="250px"
           height={"300px"}
         />
-        <progress id="vida-pokemon1" value={health}></progress>
-        <label htmlFor="vida-pokemon1" id="label-hp1"></label>
+        <progress id="vida-pokemon1" value={health} max={maxHealth}></progress>
+        <label htmlFor="vida-pokemon1" id="label-hp1">{health+ "/" +maxHealth}</label>
+      </div>
+
+      <div> 
+
       </div>
     </div>
   );
 };
+
+//map the attacks and create the buttons with thr attack names and values  
 
 export default SelectPokemon;
