@@ -7,11 +7,11 @@ function App() {
     <div className="App">
 
       <div className='first-section'> 
-      <SelectPokemon/>
+      <SelectPokemon player="1"/>
       </div>
       
       <div className='second-section'>
-      <SelectPokemon/>
+      <SelectPokemon player="2"/>
        </div>
      
    
